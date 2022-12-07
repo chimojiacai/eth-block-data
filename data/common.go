@@ -35,18 +35,11 @@ const DeployContractHash = "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3
 const (
 	ERC1155TransferSingle = "TransferSingle(address,address,address,uint256,uint256)"
 	ERC1155TransferBatch  = "TransferBatch(address,address,address,uint256[],uint256[])"
-	ERC1155ApproveForAll  = "ApprovalForAll(address,address,bool)"
 )
 
-// ERC721事件
+// ERC721/20/1155公共事件
 const (
-	ERC721Transfer      = "Transfer(address,address,uint256)"
-	ERC721Approval      = "Approval(address,address,uint256)"
-	ERC721ApproveForAll = "ApprovalForAll(address,address,bool)"
-)
-
-// ERC20事件
-const (
-	ERC20Transfer = "Transfer(address,address,uint256)"
-	ERC20Approval = "Approval(address,address,uint256)"
+	TransferEvent      = "Transfer(address,address,uint256)"
+	ApprovalEvent      = "Approval(address,address,uint256)"
+	ApproveForAllEvent = "ApprovalForAll(address,address,bool)"
 )
