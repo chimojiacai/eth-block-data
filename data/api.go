@@ -83,16 +83,17 @@ func (c *CS) doLog(log types.Log) *ResLog {
 		BlockHash:       log.BlockHash.String(),
 		TxHash:          log.TxHash.String(),
 	}
-	c.checkContractType(res)
-	if res.ContractType == "" {
-		return nil
-	}
 	switch log.Topics[0] {
 	case common.HexToHash(DeployContractHash): // 创建合约
 		res.FromAddress = common.HexToAddress(log.Topics[2].Hex()).String() // 创建者
 		res.ToAddress = common.HexToAddress(log.Topics[1].Hex()).String()   // 0地址
 		res.Event = DeployContract
+		c.checkContractTypeIs721Or1155(res)
+		if res.ContractType == "" {
+			return nil
+		}
 	case EventHash(ERC1155TransferSingle): // erc1155 单次转账
+		res.ContractType = ContractType1155
 		res.Event = TransferSingle
 		doAddress23(log.Topics, res)
 		contractAbi, err := abi.JSON(strings.NewReader(ABI.ERC1155ABI)) // 合约数据
@@ -109,6 +110,7 @@ func (c *CS) doLog(log types.Log) *ResLog {
 		res.Amount = float64(singleLogData.Value.Int64())
 		res.TokenId = singleLogData.Id
 	case EventHash(ERC1155TransferBatch): // erc1155 批量转账
+		res.ContractType = ContractType1155
 		res.Event = TransferBatch
 		doAddress23(log.Topics, res)
 		contractAbi, err := abi.JSON(strings.NewReader(ABI.ERC1155ABI)) // 合约数据
@@ -125,10 +127,18 @@ func (c *CS) doLog(log types.Log) *ResLog {
 		res.Amounts = logData.Values
 		res.TokenIds = logData.Ids
 	case EventHash(ApproveForAllEvent): // erc1155/721 批量授权
+		c.checkContractTypeIs721Or1155(res)
+		if res.ContractType == "" {
+			return nil
+		}
 		res.Event = ApprovalForAll
 		doAddress12(log.Topics, res)
 		res.ApprovalForAll = common.BytesToHash(log.Data).Big().Cmp(big.NewInt(1)) == 0
 	case EventHash(TransferEvent): // erc721/20 转账
+		c.checkContractTypeIs721Or20(res)
+		if res.ContractType == "" {
+			return nil
+		}
 		res.Event = Transfer
 		if res.ContractType == ContractType20 {
 			doAddress12(log.Topics, res)
@@ -139,6 +149,10 @@ func (c *CS) doLog(log types.Log) *ResLog {
 			res.TokenId = log.Topics[3].Big()
 		}
 	case EventHash(ApprovalEvent): // erc721/20 单次授权
+		c.checkContractTypeIs721Or20(res)
+		if res.ContractType == "" {
+			return nil
+		}
 		res.Event = Approval
 		if res.ContractType == ContractType721 {
 			doAddress12(log.Topics, res)
@@ -148,12 +162,14 @@ func (c *CS) doLog(log types.Log) *ResLog {
 			dValue := common.BytesToHash(log.Data)
 			res.Amount = ChainAmount(dValue.Big(), res.Decimal) // 真实金额
 		}
+	default:
+		return nil
 	}
 	return res
 }
 
 // 判断合约类型
-func (c *CS) checkContractType(res *ResLog) {
+func (c *CS) checkContractTypeIs721Or1155(res *ResLog) {
 	// 判断erc721
 	e721, err := ABI.NewABIErc721Caller(common.HexToAddress(res.ContractAddress), c.Client) // 这里是合约地址
 	if err == nil {
@@ -169,10 +185,25 @@ func (c *CS) checkContractType(res *ResLog) {
 	e1155, err := ABI.NewABIErc1155Caller(common.HexToAddress(res.ContractAddress), c.Client) // 这里是合约地址
 	if err == nil {
 		var blob [4]byte
-		binary.BigEndian.PutUint32(blob[:], 0xd9b67a26)
+		binary.BigEndian.PutUint32(blob[:], 0xd9b67a26) // 0xd9b67a26=1155
 		supportsInterface, err := e1155.SupportsInterface(nil, blob)
 		if err == nil && supportsInterface {
 			res.ContractType = ContractType1155
+			return
+		}
+	}
+}
+
+// 判断合约类型
+func (c *CS) checkContractTypeIs721Or20(res *ResLog) {
+	// 判断erc721
+	e721, err := ABI.NewABIErc721Caller(common.HexToAddress(res.ContractAddress), c.Client) // 这里是合约地址
+	if err == nil {
+		var blob [4]byte
+		binary.BigEndian.PutUint32(blob[:], 0x80ac58cd)
+		supportsInterface, err := e721.SupportsInterface(nil, blob)
+		if err == nil && supportsInterface {
+			res.ContractType = ContractType721
 			return
 		}
 	}

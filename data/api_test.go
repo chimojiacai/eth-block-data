@@ -16,7 +16,6 @@ import (
 func TestCS_GetBlocks(t *testing.T) {
 	c := client.C{
 		Provider: "https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7",
-		ChainId:  9215,
 	}
 	cc, err := ethclient.Dial(c.Provider)
 	if err != nil {
