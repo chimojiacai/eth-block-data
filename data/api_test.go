@@ -15,7 +15,7 @@ import (
 
 func TestCS_GetBlocks(t *testing.T) {
 	c := client.C{
-		Provider: "xxxx",
+		Provider: "https://eth-mainnet.nodereal.io/v1/1659dfb40aa24bbb8153a677b98064d7",
 		ChainId:  9215,
 	}
 	cc, err := ethclient.Dial(c.Provider)
@@ -24,8 +24,8 @@ func TestCS_GetBlocks(t *testing.T) {
 	}
 	cs := CS{
 		Client:    cc,
-		FromBlock: 1521801,
-		ToBlock:   1522008,
+		FromBlock: 16137291,
+		ToBlock:   16137291,
 		Ctx:       context.Background(),
 	}
 	blocks, err := cs.GetBlocks()

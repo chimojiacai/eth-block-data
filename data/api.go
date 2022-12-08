@@ -123,7 +123,7 @@ func (c *CS) doLog(log types.Log) *ResLog {
 			return nil
 		}
 		res.Amounts = logData.Values
-		res.TokenIds = logData.Values
+		res.TokenIds = logData.Ids
 	case EventHash(ApproveForAllEvent): // erc1155/721 批量授权
 		res.Event = ApprovalForAll
 		doAddress12(log.Topics, res)
@@ -217,10 +217,10 @@ func (c *CS) checkContractIsErc20(res *ResLog) bool {
 	if err != nil || name == "" {
 		return false
 	}
-	_, err = erc20Caller.BalanceOf(nil, common.HexToAddress(res.ContractAddress))
-	if err != nil {
-		return false
-	}
+	//_, err = erc20Caller.BalanceOf(nil, common.HexToAddress(res.ContractAddress))
+	//if err != nil {
+	//	return false
+	//}
 	return true
 }
 
