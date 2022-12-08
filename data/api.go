@@ -8,8 +8,8 @@ package data
 import "C"
 import (
 	"context"
-	"ebd/ABI"
 	"encoding/binary"
+	"github.com/chimojiacai/eth-block-data/ABI"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"

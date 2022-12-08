@@ -7,8 +7,8 @@ package data
 
 import (
 	"context"
-	"ebd/client"
 	"encoding/json"
+	"github.com/chimojiacai/eth-block-data/client"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"testing"
 )
