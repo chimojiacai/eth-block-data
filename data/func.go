@@ -43,3 +43,14 @@ type ResLog struct {
 	TokenIds        []*big.Int `json:"token_ids,omitempty"`        // 针对erc1155的批量转账
 	ApprovalForAll  bool       `json:"approval_for_all,omitempty"` // 针对erc1155和erc721的字段
 }
+
+// EthRecord eth金额流水
+type EthRecord struct {
+	FromAddress string  `json:"from_address"` // from用户地址
+	ToAddress   string  `json:"to_address"`   // to用户地址
+	Amount      float64 `json:"amount"`       // 转账金额
+	FeeAmount   float64 `json:"fee_amount"`   // 手续费金额
+	FromAmount  float64 `json:"from_amount"`  // 流水之后的金额
+	ToAmount    float64 `json:"to_amount"`    // 流水之后的金额
+	TxID        string  `json:"tx_id"`        // 公链的交易id
+}

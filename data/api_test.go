@@ -34,3 +34,23 @@ func TestCS_GetBlocks(t *testing.T) {
 	jsonS, _ := json.Marshal(blocks)
 	t.Log(string(jsonS))
 }
+
+func TestCS_GetETHLogsByNumber(t *testing.T) {
+	c := client.C{
+		Provider: "http://10.182.10.193:1234",
+	}
+	cc, err := ethclient.Dial(c.Provider)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cs := CS{
+		Client: cc,
+		Ctx:    context.Background(),
+	}
+	blocks, err := cs.GetETHLogsByNumber(1655849)
+	if err != nil {
+		t.Fatal(err)
+	}
+	jsonS, _ := json.Marshal(blocks)
+	t.Log(string(jsonS))
+}

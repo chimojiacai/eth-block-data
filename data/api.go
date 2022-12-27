@@ -266,3 +266,52 @@ func doAddress23(logs []common.Hash, res *ResLog) {
 	res.FromAddress = common.HexToAddress(logs[2].Hex()).String()
 	res.ToAddress = common.HexToAddress(logs[3].Hex()).String()
 }
+
+// GetETHLogsByNumber 通过高度获取链上ETH流水记录
+// 可在自己的业务逻辑中过滤得到自己想要的address
+func (c *CS) GetETHLogsByNumber(number int64) ([]*EthRecord, error) {
+	logs, err := c.Client.BlockByNumber(c.Ctx, big.NewInt(number))
+	if err != nil {
+		return nil, err
+	}
+	if logs == nil || len(logs.Transactions()) == 0 {
+		return nil, nil
+	}
+	var res []*EthRecord
+	for _, transaction := range logs.Transactions() {
+		tmp := &EthRecord{}
+		tmp.Amount = ChainAmount(transaction.Value(), 18) // 转账金额
+		msg, err := transaction.AsMessage(types.NewEIP155Signer(transaction.ChainId()), nil)
+		if err != nil {
+			return nil, err
+		}
+		tmp.FromAddress = msg.From().Hex() // from地址
+		if transaction.To() != nil {
+			tmp.ToAddress = transaction.To().String() // to地址
+		}
+		tmp.TxID = transaction.Hash().Hex() // 交易hash
+		// 获取交易详情
+		transactionReceipt, err := c.Client.TransactionReceipt(c.Ctx, transaction.Hash())
+		if err != nil {
+			return nil, err
+		}
+		// 真实gas费用
+		tmp.FeeAmount = ChainAmount(big.NewInt(int64(transactionReceipt.GasUsed)), 9)
+		// 获取from和to的地址的当时区块高度的金额
+		atFrom, err := c.Client.BalanceAt(c.Ctx, msg.From(), transactionReceipt.BlockNumber)
+		if err != nil {
+			return nil, err
+		}
+		tmp.FromAmount = ChainAmount(atFrom, 18)
+		if transaction.To() != nil {
+			atTo, err := c.Client.BalanceAt(c.Ctx, *transaction.To(), transactionReceipt.BlockNumber)
+			if err != nil {
+				return nil, err
+			}
+			tmp.ToAmount = ChainAmount(atTo, 18)
+		}
+
+		res = append(res, tmp)
+	}
+	return res, nil
+}
