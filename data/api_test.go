@@ -37,7 +37,7 @@ func TestCS_GetBlocks(t *testing.T) {
 
 func TestCS_GetETHLogsByNumber(t *testing.T) {
 	c := client.C{
-		Provider: "http://10.182.10.193:1234",
+		Provider: "xxxx",
 	}
 	cc, err := ethclient.Dial(c.Provider)
 	if err != nil {
