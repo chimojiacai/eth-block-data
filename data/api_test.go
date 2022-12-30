@@ -15,7 +15,7 @@ import (
 
 func TestCS_GetBlocks(t *testing.T) {
 	c := client.C{
-		Provider: "http://10.235.65.17:8545",
+		Provider: "xxx",
 	}
 	cc, err := ethclient.Dial(c.Provider)
 	if err != nil {
@@ -38,7 +38,7 @@ func TestCS_GetBlocks(t *testing.T) {
 func TestCS_GetETHLogsByNumber(t *testing.T) {
 	// 注意这里需要使用存档节点或者全节点，不然会报错
 	c := client.C{
-		Provider: "http://10.235.65.17:8545",
+		Provider: "xxx",
 	}
 	cc, err := ethclient.Dial(c.Provider)
 	if err != nil {
