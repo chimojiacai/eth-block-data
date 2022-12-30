@@ -281,7 +281,7 @@ func (c *CS) GetETHLogsByNumber(number int64) ([]*EthRecord, error) {
 	for _, transaction := range logs.Transactions() {
 		tmp := &EthRecord{}
 		tmp.Amount = ChainAmount(transaction.Value(), 18) // 转账金额
-		msg, err := transaction.AsMessage(types.NewEIP155Signer(transaction.ChainId()), nil)
+		msg, err := transaction.AsMessage(types.LatestSignerForChainID(transaction.ChainId()), nil)
 		if err != nil {
 			return nil, err
 		}
