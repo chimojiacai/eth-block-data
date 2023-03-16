@@ -17,13 +17,18 @@ func EventHash(op string) common.Hash {
 	return crypto.Keccak256Hash([]byte(op))
 }
 
-// 处理金额
+// ChainAmount 处理金额
 func ChainAmount(amount *big.Int, decimal uint8) float64 {
 	fbalance := new(big.Float)
 	fbalance.SetString(amount.String())
 	amountHuman := new(big.Float).Quo(fbalance, big.NewFloat(math.Pow10(int(decimal))))
 	f, _ := amountHuman.Float64()
 	return f
+}
+
+type ContractInfo struct {
+	Decimal      uint8  `json:"-"`             // erc20的精度
+	ContractType string `json:"contract_type"` // 合约类型
 }
 
 // ResLog 请求返回数据

@@ -13,9 +13,10 @@ var (
 
 // 合约类型
 const (
-	ContractType20   = "ERC20"
-	ContractType721  = "ERC721"
-	ContractType1155 = "ERC1155"
+	ContractType20      = "ERC20"
+	ContractType721     = "ERC721"
+	ContractType1155    = "ERC1155"
+	ContractTypeUnknown = "unknown"
 )
 
 // 合约事件
