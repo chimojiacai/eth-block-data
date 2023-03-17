@@ -58,7 +58,7 @@ func TestCS_GetETHLogsByNumber(t *testing.T) {
 
 func TestCS_GetErc20TransferBlocks(t *testing.T) {
 	c := client.C{
-		Provider: "xxxxx",
+		Provider: "xxxx",
 	}
 	cc, err := ethclient.Dial(c.Provider)
 	if err != nil {

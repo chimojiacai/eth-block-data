@@ -101,6 +101,7 @@ func (c *CS) doLog(log types.Log, contractTypeMap map[string]*ContractInfo) *Res
 		// 判断合约类型
 		c.checkContractTypeIs721Or1155(res, contractTypeMap)
 		if res.ContractType == ContractTypeUnknown {
+			res = nil
 			break
 		}
 	case EventHash(ERC1155TransferSingle): // erc1155 单次转账
@@ -109,6 +110,7 @@ func (c *CS) doLog(log types.Log, contractTypeMap map[string]*ContractInfo) *Res
 		doAddress23(log.Topics, res)
 		contractAbi, err := abi.JSON(strings.NewReader(ABI.ERC1155ABI)) // 合约数据
 		if err != nil {
+			res = nil
 			break
 		}
 		singleLogData := struct {
@@ -116,6 +118,7 @@ func (c *CS) doLog(log types.Log, contractTypeMap map[string]*ContractInfo) *Res
 			Value *big.Int `json:"value"`
 		}{}
 		if err := contractAbi.UnpackIntoInterface(&singleLogData, res.Event, log.Data); err != nil {
+			res = nil
 			break
 		}
 		res.Amount = float64(singleLogData.Value.Int64())
@@ -126,6 +129,7 @@ func (c *CS) doLog(log types.Log, contractTypeMap map[string]*ContractInfo) *Res
 		doAddress23(log.Topics, res)
 		contractAbi, err := abi.JSON(strings.NewReader(ABI.ERC1155ABI)) // 合约数据
 		if err != nil {
+			res = nil
 			break
 		}
 		logData := struct {
@@ -141,10 +145,12 @@ func (c *CS) doLog(log types.Log, contractTypeMap map[string]*ContractInfo) *Res
 		// 判断合约类型
 		c.checkContractTypeIs721Or1155(res, contractTypeMap)
 		if res.ContractType == ContractTypeUnknown {
+			res = nil
 			break
 		}
 		res.Event = ApprovalForAll
 		if c.ContractType != "" && res.ContractType != c.ContractType { // 筛选目标合约类型
+			res = nil
 			break
 		}
 		doAddress12(log.Topics, res)
@@ -154,6 +160,7 @@ func (c *CS) doLog(log types.Log, contractTypeMap map[string]*ContractInfo) *Res
 		c.checkContractTypeIs721Or20(res, contractTypeMap)
 
 		if res.ContractType == ContractTypeUnknown {
+			res = nil
 			break
 		}
 		res.Event = Transfer
