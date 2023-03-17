@@ -58,8 +58,7 @@ func TestCS_GetETHLogsByNumber(t *testing.T) {
 
 func TestCS_GetErc20TransferBlocks(t *testing.T) {
 	c := client.C{
-		//Provider: "https://eth.api.onfinality.io/rpc?apikey=6cde774b-af91-4bf0-a970-08d1bbb6eaeb",
-		Provider: "https://rpc.ankr.com/eth/3a0e0e89b6dc0519920caa913fc9e3241627e24a05999f032540bd9bf55ceafd",
+		Provider: "xxxxx",
 	}
 	cc, err := ethclient.Dial(c.Provider)
 	if err != nil {
